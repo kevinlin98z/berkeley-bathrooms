@@ -1,8 +1,8 @@
 {
-  "expoServerPort": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
-  "packagerPort": null,
-  "packagerPid": null
+  "expoServerPort": 19000,
+  "expoServerNgrokUrl": "https://s9-tv7.dengjulie.berkeley-bathrooms.exp.direct",
+  "packagerNgrokUrl": "https://packager.s9-tv7.dengjulie.berkeley-bathrooms.exp.direct",
+  "ngrokPid": 39584,
+  "packagerPort": 19002,
+  "packagerPid": 39573
 }

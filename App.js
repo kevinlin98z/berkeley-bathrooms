@@ -91,7 +91,7 @@ class MyListItem extends React.PureComponent {
                 <Text style={{ color: "black", fontSize: 20, }}>
                     {this.props.title}
                 </Text>
-                <Counter/>
+                <CounterContainer />
             </View>
         );
     }
@@ -124,13 +124,13 @@ class Counter extends Component {
     return (
       <View>
         <Text style={styles.counterText}>
-          {count === null ? 'Zero' : count}
+          {count === null ? '0' : count}
         </Text>
         <TouchableOpacity onPress={this._increaseCount}>
              <View>
                  <Image
                   style={{width: 50, height: 50}}
-                  source={{uri: 'https://d30y9cdsu7xlg0.cloudfront.net/png/66854-200.png'}}
+                  source={{uri: 'assets/icons/bubble-icon.jpg'}}
                 />
              </View>
          </TouchableOpacity>
