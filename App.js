@@ -1,5 +1,22 @@
-import { FlatList, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
+import { FlatList, Text, TouchableOpacity, View, Image, StyleSheet } from "react-native";
+import React, {Component} from "react";
+import { Constants } from 'expo';
+import * as firebase from 'firebase';
+
+const config = {
+  apiKey: "AIzaSyCMEnwpE8os39KQZIIZhjc9kxptiHcEWCs",
+  authDomain: "berkeley-bathrooms.firebaseapp.com",
+  databaseURL: "https://berkeley-bathrooms.firebaseio.com",
+  projectId: "berkeley-bathrooms",
+  storageBucket: "berkeley-bathrooms.appspot.com",
+  messagingSenderId: "435713210993",
+};
+
+try {
+  firebase.initializeApp(config);
+} catch (e) {
+  console.log('App reloaded, so firebase did not re-initialize');
+}
 
 export default class App extends React.PureComponent {
     render() {
@@ -50,58 +67,100 @@ export default class App extends React.PureComponent {
     }
 }
 
-class MyListItem extends React.PureComponent { //Multi > MyList
-    _onPress = () => {
-        this.props.onPressItem(this.props.id); //my id got pressed, pass to parent
-    };
+class CounterContainer extends Component {
+  state = {
+    count: null,
+  };
 
+  componentWillMount() {
+    firebase.database().ref('counter').on('value', snapshot => {
+      let count = snapshot.val().count;
+      this.setState({ count });
+    });
+  }
+
+  render() {
+    return <Counter count={this.state.count} />;
+  }
+}
+
+class MyListItem extends React.PureComponent {
     render() {
-        const textColor = this.props.selected ? "red" : "black";
         return (
-            <TouchableOpacity onPress={this._onPress}>
-                <View>
-                    <Text style={{ color: textColor, fontSize: 20, }}>
-                        {this.props.title}
-                    </Text>
-                </View>
-            </TouchableOpacity> //this.props.clapCount
+            <View>
+                <Text style={{ color: "black", fontSize: 20, }}>
+                    {this.props.title}
+                </Text>
+                <Counter/>
+            </View>
         );
     }
 }
 
 class MultiSelectList extends React.PureComponent {
-    state = { selected: (new Map(): Map<string, boolean>) }; //mutable, like loading
-
-    _keyExtractor = (item, index) => item.id;
-
-    _onPressItem = (id: string) => {
-        // updater functions are preferred for transactional updates
-        this.setState(state => { //clapcount gets updated
-            // copy the map rather than modifying state.
-            const selected = new Map(state.selected);
-            selected.set(id, !selected.get(id)); // toggle
-            return { selected };
-        });
-    };
+    _keyExtractor = (item) => item.id;
 
     _renderItem = ({ item }) =>
         <MyListItem
             id={item.id}
-            onPressItem={this._onPressItem}
-            selected={!!this.state.selected.get(item.id)}
             title={item.title}
-            //soapCount={0}
-            //clapcount is located here
         />;
 
     render() {
         return (
             <FlatList
                 data={this.props.data}
-                extraData={this.state}
                 keyExtractor={this._keyExtractor}
                 renderItem={this._renderItem}
             />
         );
     }
 }
+
+class Counter extends Component {
+  render() {
+    let { count } = this.props;
+
+    return (
+      <View>
+        <Text style={styles.counterText}>
+          {count === null ? 'Zero' : count}
+        </Text>
+        <TouchableOpacity onPress={this._increaseCount}>
+             <View>
+                 <Image
+                  style={{width: 50, height: 50}}
+                  source={{uri: 'https://d30y9cdsu7xlg0.cloudfront.net/png/66854-200.png'}}
+                />
+             </View>
+         </TouchableOpacity>
+      </View>
+    );
+  }
+
+  _increaseCount = () => {
+    firebase.database().ref('counter').set({
+      count: (this.props.count || 0) + 1,
+    });
+  };
+}
+
+const styles = StyleSheet.create({
+    // parentContainer: {
+    //     display: flex;
+    // },
+    // childContainer: {
+
+    // },
+  counterContainer: {
+    flex: 1,
+    paddingTop: Constants.statusBarHeight,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  counterText: {
+    fontSize: 20,
+    marginBottom: 10,
+  },
+});
